@@ -1,12 +1,14 @@
 __author__ = 'chrisPiemonte'
 
+import rdflib
 import itertools
-import numpy as np
+from sklearn import metrics
 import matplotlib.pyplot as plt
+import numpy as np, pandas as pd
 import rdflib.plugins.sparql as sparql
 
-import plotly.plotly as py, plotly.graph_objs as go
 from plotly.graph_objs import *
+import plotly.plotly as py, plotly.graph_objs as go
 
 
 get_mid = lambda uri: uri.replace("http://rdf.freebase.com/ns", "")
@@ -164,7 +166,7 @@ def plot_confusion_matrix(cm, classes,
     else:
         print('Confusion matrix, without normalization')
 
-    print(cm)
+    # print(cm)
 
     thresh = cm.max() / 2.
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
@@ -175,3 +177,68 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    
+
+def binclass_metrics(y_true, y_pred, name="mc"):
+    return pd.DataFrame([
+        [
+            metrics.accuracy_score(y_true, y_pred),
+            metrics.log_loss(y_true, y_pred),
+            metrics.precision_score(y_true, y_pred),
+            metrics.recall_score(y_true, y_pred),
+            metrics.f1_score(y_true, y_pred),
+            metrics.matthews_corrcoef(y_true, y_pred)
+        ]],
+        index=[
+            name
+        ],
+        columns=[
+            "Accuracy", 
+            "Log-loss", 
+            "Precision", 
+            "Recall", 
+            "F1-score",
+            "Matthews"
+        ])
+
+def clust_metrics(y_true, y_pred, xs, metric='euclidean', name="mc"):
+    return pd.DataFrame([
+        [
+            metrics.homogeneity_score(y_true, y_pred),
+            metrics.completeness_score(y_true, y_pred),
+            metrics.v_measure_score(y_true, y_pred),
+            metrics.adjusted_rand_score(y_true, y_pred),
+            metrics.adjusted_mutual_info_score(y_true, y_pred),
+            metrics.silhouette_score(xs, y_pred, metric=metric)
+        ]],
+        index=[
+            name
+        ],
+        columns=[
+            "Homogeneity", 
+            "Completeness", 
+            "V-Measure score", 
+            "Adjusted Rand index", 
+            "Mutual Information", 
+            "Silhouette"
+        ])
+
+def multiclass_metrics(y_true, y_pred, average="weighted", name="mc"):
+    return pd.DataFrame([
+        [
+            metrics.accuracy_score(y_true, y_pred),
+            metrics.cohen_kappa_score(y_true, y_pred),
+            metrics.precision_score(y_true, y_pred, average=average),
+            metrics.recall_score(y_true, y_pred, average=average),
+            metrics.f1_score(y_true, y_pred, average=average)
+        ]],
+        index=[
+            name
+        ],
+        columns=[
+            "Accuracy", 
+            "Kappa", 
+            "Precision", 
+            "Recall", 
+            "F1-score",
+        ])
