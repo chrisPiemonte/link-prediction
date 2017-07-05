@@ -1,4 +1,4 @@
-# ![alt tapas](https://raw.githubusercontent.com/chrisPiemonte/tapas/master/doc/img/tapas.png "tapas") Tapas
+# Tapas <img src="https://raw.githubusercontent.com/chrisPiemonte/tapas/master/doc/img/tapas.png" width="64">
 
 ## Setup
 
